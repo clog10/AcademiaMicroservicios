@@ -1,8 +1,11 @@
 package com.ibm.product.product.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ProductController {
 
     @Autowired
+    private Environment env;
+
+    @Autowired
     private ProductService productService;
 
     @PostMapping("/create")    
@@ -34,11 +40,16 @@ public class ProductController {
 
     @GetMapping("/find-product/{id}")
     public Product findProduct(@PathVariable Long id){
-        return productService.findById(id);
+        Product product = productService.findById(id);
+        product.setPort(Integer.parseInt(env.getProperty("local.server.port")));
+        return product;
     }
 
     @GetMapping("/list-all")
     public List<Product> list(){
-        return productService.findAll();
+        return productService.findAll().stream().map(product -> {
+            product.setPort(Integer.parseInt(env.getProperty("local.server.port")));
+            return product;
+        }).collect(Collectors.toList());
     }
 }
