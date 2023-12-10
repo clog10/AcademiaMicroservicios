@@ -20,7 +20,6 @@ import com.ibm.item.item.model.Product;
 import com.ibm.item.item.service.ItemService;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 
 @RestController
 @RequestMapping("/item")
