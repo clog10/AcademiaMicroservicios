@@ -22,7 +22,7 @@ import com.ibm.item.item.service.ItemService;
 public class ItemController {
 
     @Autowired
-    @Qualifier("serviceFeign")
+    @Qualifier("serviceRest")
     private ItemService itemService;
 
     @GetMapping("/list-all")
