@@ -1,9 +1,12 @@
 package com.ibm.item.item.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +29,23 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 public class ItemController {
 
     @Autowired
-    @Qualifier("serviceRest")
+    @Qualifier("serviceFeign")
     private ItemService itemService;
 
     @Autowired
     private CircuitBreakerFactory circuitBreakerFactory;
+
+    @Value("${configuration.text}")
+    String text;
+
+    @Value("${configuration.service.name}")
+    String nameEnvironment;
+
+    @Value("${configuration.author.name}")
+    String author;
+
+    @Value("${configuration.author.email}")
+    String email;
 
     @GetMapping("/list-all")
     public List<Product> list() {
@@ -45,15 +60,15 @@ public class ItemController {
 
     @CircuitBreaker(name = "items", fallbackMethod = "alternativeMethod2")
     @GetMapping("/detail/{id}")
-    public ResponseEntity<Product> detail(@PathVariable Long id){
+    public ResponseEntity<Product> detail(@PathVariable Long id) {
         Product product = itemService.findById(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @GetMapping("/info/{id}")
-    public Product info(@PathVariable Long id){
+    public Product info(@PathVariable Long id) {
         return circuitBreakerFactory.create("items").run(() -> itemService.findById(id),
-        e -> alternativeMethod(e));
+                e -> alternativeMethod(e));
     }
 
     @PostMapping("/create")
@@ -82,6 +97,16 @@ public class ItemController {
         product.setName("Default product");
         product.setPrice(0.0);
         return new ResponseEntity<>(product, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @GetMapping("/config")
+    public ResponseEntity<?> getConfig() {
+        Map<String, String> json = new HashMap<String, String>();
+        json.put("name", nameEnvironment);
+        json.put("description", text);
+        json.put("author", author);
+        json.put("email", email);
+        return new ResponseEntity<Map<String, String>>(json, HttpStatus.OK);
     }
 
 }
