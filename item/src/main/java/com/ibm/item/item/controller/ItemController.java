@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ibm.item.item.config.ConfigService;
 import com.ibm.item.item.model.Product;
 import com.ibm.item.item.service.ItemService;
 
@@ -34,6 +36,9 @@ public class ItemController {
 
     @Autowired
     private CircuitBreakerFactory circuitBreakerFactory;
+
+    @Autowired
+    private ConfigService configService;
 
     @Value("${configuration.text}")
     String text;
@@ -101,11 +106,13 @@ public class ItemController {
 
     @GetMapping("/config")
     public ResponseEntity<?> getConfig() {
-        Map<String, String> json = new HashMap<String, String>();
+        /*Map<String, String> json = new HashMap<String, String>();
         json.put("name", nameEnvironment);
         json.put("description", text);
         json.put("author", author);
-        json.put("email", email);
+        json.put("email", email);*/
+
+        Map<String, String> json = configService.getConfig();
         return new ResponseEntity<Map<String, String>>(json, HttpStatus.OK);
     }
 
