@@ -1,11 +1,15 @@
 package com.ibm.product.product.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +32,18 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    @Value("${configuration.text}")
+    String text;
+
+    @Value("${configuration.service.name}")
+    String nameEnvironment;
+
+    @Value("${configuration.author.name}")
+    String author;
+
+    @Value("${configuration.author.email}")
+    String email;
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)    
@@ -55,4 +71,15 @@ public class ProductController {
             return product;
         }).collect(Collectors.toList());
     }
+
+    @GetMapping("/config")
+    public ResponseEntity<?> getConfig() {
+        Map<String, String> json = new HashMap<String, String>();
+        json.put("name", nameEnvironment);
+        json.put("description", text);
+        json.put("author", author);
+        json.put("email", email);
+        return new ResponseEntity<Map<String, String>>(json, HttpStatus.OK);
+    }
+    
 }
