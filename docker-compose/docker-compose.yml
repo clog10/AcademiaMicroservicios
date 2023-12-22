@@ -1,0 +1,79 @@
+services:
+  config-server:
+    image: config-server
+    ports:
+      - "8888:8888"
+    restart: always
+    networks:
+      - products-net
+  eureka-server:
+    image: eureka-server
+    ports:
+      - "8761:8761"
+    restart: always
+    networks:
+      - products-net
+  products-service:
+    image: products-service
+    restart: always
+    networks:
+      - products-net
+    depends_on:
+      - config-server
+      - eureka-server
+  products-service2:
+    image: products-service
+    restart: always
+    networks:
+      - products-net
+    depends_on:
+      - config-server
+      - eureka-server
+  products-service3:
+    image: products-service
+    restart: always
+    networks:
+      - products-net
+    depends_on:
+      - config-server
+      - eureka-server
+  products-service4:
+    image: products-service
+    restart: always
+    networks:
+      - products-net
+    depends_on:
+      - config-server
+      - eureka-server
+  products-service5:
+    image: products-service
+    restart: always
+    networks:
+      - products-net
+    depends_on:
+      - config-server
+      - eureka-server
+  items-service:
+    image: items-service
+    ports:
+      - "8002:8002"
+    restart: always
+    networks:
+      - products-net
+    depends_on:
+      - config-server
+      - eureka-server
+  gateway-server:
+    image: gateway-server
+    ports:
+      - "8090:8090"
+    restart: always
+    networks:
+      - products-net
+    depends_on:
+      - eureka-server
+      - products-service
+      - items-service
+
+networks:
+  products-net:
