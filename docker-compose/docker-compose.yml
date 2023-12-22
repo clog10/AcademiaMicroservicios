@@ -18,38 +18,8 @@ services:
     restart: always
     networks:
       - products-net
-    depends_on:
-      - config-server
-      - eureka-server
-  products-service2:
-    image: products-service
-    restart: always
-    networks:
-      - products-net
-    depends_on:
-      - config-server
-      - eureka-server
-  products-service3:
-    image: products-service
-    restart: always
-    networks:
-      - products-net
-    depends_on:
-      - config-server
-      - eureka-server
-  products-service4:
-    image: products-service
-    restart: always
-    networks:
-      - products-net
-    depends_on:
-      - config-server
-      - eureka-server
-  products-service5:
-    image: products-service
-    restart: always
-    networks:
-      - products-net
+    deploy:
+      replicas: 5
     depends_on:
       - config-server
       - eureka-server
